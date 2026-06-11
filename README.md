@@ -25,14 +25,6 @@ This project demonstrates the integration of IoT concepts, environmental monitor
 
 ## Technologies Used
 
-### Hardware
-
-* ESP32 / Arduino
-* MQ135 Air Quality Sensor
-* DHT11/DHT22 Temperature & Humidity Sensor
-
-### Software
-
 * Python
 * Arduino IDE
 * Pandas
