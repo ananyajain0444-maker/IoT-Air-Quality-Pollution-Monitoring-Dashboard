@@ -1,0 +1,140 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import random
+from datetime import datetime
+import os
+
+os.makedirs("images", exist_ok=True)
+os.makedirs("data", exist_ok=True)
+
+def generate_dashboard(data):
+
+    timestamp = datetime.now()
+
+    if data["aqi"] <= 50:
+        status = "Good"
+    elif data["aqi"] <= 100:
+        status = "Moderate"
+    elif data["aqi"] <= 200:
+        status = "Poor"
+    else:
+        status = "Hazardous"
+
+    row = {
+        "Timestamp": timestamp,
+        "AQI": data["aqi"],
+        "Temperature": data["temperature"],
+        "Humidity": data["humidity"]
+    }
+
+    try:
+        df = pd.read_csv("data/air_quality_logs.csv")
+        df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+    except:
+        df = pd.DataFrame([row])
+
+    df.to_csv("data/air_quality_logs.csv", index=False)
+
+    # Create realistic historical data
+
+    history = pd.DataFrame({
+        "AQI": [random.randint(40,250) for _ in range(30)],
+        "Temperature": [random.randint(20,40) for _ in range(30)],
+        "Humidity": [random.randint(35,85) for _ in range(30)]
+    })
+
+    # ==========================
+    # Dashboard
+    # ==========================
+
+    fig, ax = plt.subplots(figsize=(8,5))
+
+    metrics = [
+        data["aqi"],
+        data["temperature"],
+        data["humidity"]
+    ]
+
+    labels = [
+        "AQI",
+        "Temperature",
+        "Humidity"
+    ]
+
+    bars = ax.bar(labels, metrics)
+
+    ax.set_title("Air Quality Dashboard")
+    ax.bar_label(bars)
+
+    plt.tight_layout()
+    plt.savefig("images/dashboard.png")
+    plt.close()
+
+    # ==========================
+    # Trend Analysis
+    # ==========================
+
+    fig, axs = plt.subplots(3,1,figsize=(10,8))
+
+    axs[0].plot(history["AQI"])
+    axs[0].set_title("AQI Trend")
+
+    axs[1].plot(history["Temperature"])
+    axs[1].set_title("Temperature Trend")
+
+    axs[2].plot(history["Humidity"])
+    axs[2].set_title("Humidity Trend")
+
+    plt.tight_layout()
+    plt.savefig("images/output_graphs.png")
+    plt.close()
+
+    # ==========================
+    # Sensor Readings
+    # ==========================
+
+    plt.figure(figsize=(8,5))
+
+    sensors = ["AQI","Temp","Humidity"]
+    values = [
+        data["aqi"],
+        data["temperature"],
+        data["humidity"]
+    ]
+
+    bars = plt.bar(sensors, values)
+
+    plt.title("Current Sensor Readings")
+    plt.bar_label(bars)
+
+    plt.tight_layout()
+    plt.savefig("images/sensor_readings.png")
+    plt.close()
+
+    # ==========================
+    # AQI Comparison
+    # ==========================
+
+    categories = [
+        "Good",
+        "Moderate",
+        "Poor",
+        "Hazardous"
+    ]
+
+    values = [50,100,200,300]
+
+    bars = plt.bar(categories, values)
+
+    plt.title("AQI Classification Levels")
+    plt.bar_label(bars)
+
+    plt.tight_layout()
+    plt.savefig("images/aqi_comparison.png")
+    plt.close()
+
+    print("\nGenerated Images:")
+    print("dashboard.png")
+    print("output_graphs.png")
+    print("sensor_readings.png")
+    print("aqi_comparison.png")
